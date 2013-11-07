@@ -1,14 +1,19 @@
 <?php
 class acl
 {
-	var $perms = array();		//Array : Almacena los permisos del usuario
-	var $userID;			//Integer : Almacena el ID del usuario
-	var $userRoles = array();	//Array : Almacena los roles del usuario
-	var $ci;
+	var $perms = array();                //Array : Almacena los permisos del usuario
+        var $userID;                        //Integer : Almacena el ID del usuario
+        var $userRoles = array();        //Array : Almacena los roles del usuario
+        var $ci;
         var $routing;
-	
+        var $perm_table = "PERMS";
+        var $role_table = "ROLES";
+        var $user_role_table = "PEOPLEROLES";
+        var $user_perms_table = "PEOPLEPERMS";
+        var $role_perms_table = "ROLEPERMS";
+        
         function __construct() {
-		$this->ci = &get_instance();
+                $this->ci = &get_instance();
                 $this->routing =& load_class('Router');
                 //$this->ci->load->helper('url');
 
@@ -17,181 +22,183 @@ class acl
                     $this->userRoles = $this->getUserRoles();
                     $this->buildACL();
                 }*/
-	}
+        }
 
-	function buildACL() {
-		//Obtiene los permisos para los roles del usuario
-		if (count($this->userRoles) > 0)
-		{
-			$this->perms = array_merge($this->perms,$this->getRolePerms($this->userRoles));
-		}
+        function buildACL() {
+                //Obtiene los permisos para los roles del usuario
+                if (count($this->userRoles) > 0)
+                {
+                        $this->perms = array_merge($this->perms,$this->getRolePerms($this->userRoles));
+                }
                 //Después, obtiene los permisos individuales del usuario
-		$this->perms = array_merge($this->perms,$this->getUserPerms($this->userID));
-	}
+                $this->perms = array_merge($this->perms,$this->getUserPerms($this->userID));
+        }
 
-	function getPermKeyFromID($permID) {
-		//$strSQL = "SELECT `permKey` FROM `".DB_PREFIX."permissions` WHERE `ID` = " . floatval($permID) . " LIMIT 1";
-		$this->ci->db->select('permKey');
-		$this->ci->db->where('id_permiso',floatval($permID));
-		$sql = $this->ci->db->get('Permisos',1);
-		$data = $sql->result();
-		return $data[0]->permKey;
-	}
+        function getPermKeyFromID($permID) {
+                //$strSQL = "SELECT `permKey` FROM `".DB_PREFIX."permissions` WHERE `ID` = " . floatval($permID) . " LIMIT 1";
+                $this->ci->db->select('PERMKEY AS permKey');
+                $this->ci->db->where('ID',floatval($permID));
+                $sql = $this->ci->db->get($this->perm_table,1);
+                $data = $sql->result();
+                return $data[0]->permKey;
+        }
 
-	function getPermNameFromID($permID) {
-		//$strSQL = "SELECT `permName` FROM `".DB_PREFIX."permissions` WHERE `ID` = " . floatval($permID) . " LIMIT 1";
-		$this->ci->db->select('nombre');
-		$this->ci->db->where('id_permiso',floatval($permID));
-		$sql = $this->ci->db->get('Permisos',1);
-		$data = $sql->result();
-		return $data[0]->nombre;
-	}
+        function getPermNameFromID($permID) {
+                //$strSQL = "SELECT `permName` FROM `".DB_PREFIX."permissions` WHERE `ID` = " . floatval($permID) . " LIMIT 1";
+                $this->ci->db->select('NAME AS nombre');
+                $this->ci->db->where('ID',floatval($permID));
+                $sql = $this->ci->db->get($this->perm_table,1);
+                $data = $sql->result();
+                return $data[0]->nombre;
+        }
 
-	function getRoleNameFromID($roleID) {
-		//$strSQL = "SELECT `roleName` FROM `".DB_PREFIX."roles` WHERE `ID` = " . floatval($roleID) . " LIMIT 1";
-		$this->ci->db->select('nombre');
-		$this->ci->db->where('id_rol',floatval($roleID),1);
-		$sql = $this->ci->db->get('Roles');
-		$data = $sql->result();
-		return $data[0]->nombre;
-	}
+        function getRoleNameFromID($roleID) {
+                //$strSQL = "SELECT `roleName` FROM `".DB_PREFIX."roles` WHERE `ID` = " . floatval($roleID) . " LIMIT 1";
+                $this->ci->db->select('NAME AS nombre');
+                $this->ci->db->where('ID',floatval($roleID),1);
+                $sql = $this->ci->db->get($this->role_table);
+                $data = $sql->result();
+                return $data[0]->nombre;
+        }
 
-	function getUserRoles() {
-		//$strSQL = "SELECT * FROM `".DB_PREFIX."user_roles` WHERE `userID` = " . floatval($this->userID) . " ORDER BY `addDate` ASC";
+        function getUserRoles() {
+                //$strSQL = "SELECT * FROM `".DB_PREFIX."user_roles` WHERE `userID` = " . floatval($this->userID) . " ORDER BY `addDate` ASC";
 
-		$this->ci->db->where(array('id_usuario'=>floatval($this->userID)));
-		$this->ci->db->order_by('fecha','asc');
-		$sql = $this->ci->db->get('RolesUsuario');
-		$data = $sql->result();
+                $this->ci->db->where(array('USERID'=>floatval($this->userID)));
+                $this->ci->db->order_by('ADDDATE','asc');
+                $sql = $this->ci->db->get($this->user_role_table);
+                $data = $sql->result();
 
-		$resp = array();
-		foreach( $data as $row )
-		{
-			$resp[] = $row->id_rol;
-		}
-		return $resp;
-	}
+                $resp = array();
+                foreach( $data as $row )
+                {
+                        $resp[] = $row->ID;
+                }
+                return $resp;
+        }
 
-	function getAllRoles($format='ids') {
-		$format = strtolower($format);
-		//$strSQL = "SELECT * FROM `".DB_PREFIX."roles` ORDER BY `roleName` ASC";
-		$this->ci->db->order_by('nombre','asc');
-		$sql = $this->ci->db->get('Roles');
-		$data = $sql->result();
+        function getAllRoles($format='ids') {
+                $format = strtolower($format);
+                //$strSQL = "SELECT * FROM `".DB_PREFIX."roles` ORDER BY `roleName` ASC";
+                $this->ci->db->order_by('NAME','asc');
+                $sql = $this->ci->db->get($this->role_table);
+                $data = $sql->result();
 
-		$resp = array();
-		foreach( $data as $row )
-		{
-			if ($format == 'full')
-			{
-				$resp[] = array("id" => $row->id_rol,"name" => $row->nombre);
-			} else {
-				$resp[] = $row->id_rol;
-			}
-		}
-		return $resp;
-	}
+                $resp = array();
+                foreach( $data as $row )
+                {
+                        if ($format == 'full')
+                        {
+                                $resp[] = array("id" => $row->ID,"name" => $row->NAME);
+                        } else {
+                                $resp[] = $row->ID;
+                        }
+                }
+                return $resp;
+        }
 
-	function getAllPerms($format='ids') {
-		$format = strtolower($format);
-		//$strSQL = "SELECT * FROM `".DB_PREFIX."permissions` ORDER BY `permKey` ASC";
+        function getAllPerms($format='ids') {
+                $format = strtolower($format);
+                //$strSQL = "SELECT * FROM `".DB_PREFIX."permissions` ORDER BY `permKey` ASC";
 
-		$this->ci->db->order_by('permKey','asc');
-		$sql = $this->ci->db->get('Permisos');
-		$data = $sql->result();
+                $this->ci->db->order_by('PERMKEY','asc');
+                $sql = $this->ci->db->get($this->perm_table);
+                $data = $sql->result();
 
-		$resp = array();
-		foreach( $data as $row )
-		{
-			if ($format == 'full')
-			{
-				$resp[$row->permKey] = array('id' => $row->id_permiso, 'name' => $row->nombre, 'key' => $row->permKey);
-			} else {
-				$resp[] = $row->id_permiso;
-			}
-		}
-		return $resp;
-	}
+                $resp = array();
+                foreach( $data as $row )
+                {
+                        if ($format == 'full')
+                        {
+                                $resp[$row->PERMKEY] = array('id' => $row->ID, 'name' => $row->PERMNAME, 'key' => $row->PERMKEY);
+                        } else {
+                                $resp[] = $row->ID;
+                        }
+                }
+                return $resp;
+        }
 
-	function getRolePerms($role) {
-		if (is_array($role))
-		{
-			//$roleSQL = "SELECT * FROM `".DB_PREFIX."role_perms` WHERE `roleID` IN (" . implode(",",$role) . ") ORDER BY `ID` ASC";
-			$this->ci->db->where_in('id_rol',$role);
-		} else {
-			//$roleSQL = "SELECT * FROM `".DB_PREFIX."role_perms` WHERE `roleID` = " . floatval($role) . " ORDER BY `ID` ASC";
-			$this->ci->db->where(array('id_rol'=>floatval($role)));
+        function getRolePerms($role) {
+                if (is_array($role))
+                {
+                        //$roleSQL = "SELECT * FROM `".DB_PREFIX."role_perms` WHERE `roleID` IN (" . implode(",",$role) . ") ORDER BY `ID` ASC";
+                        $this->ci->db->where_in('ROLEID',$role);
+                } else {
+                        //$roleSQL = "SELECT * FROM `".DB_PREFIX."role_perms` WHERE `roleID` = " . floatval($role) . " ORDER BY `ID` ASC";
+                        $this->ci->db->where(array('ROLEID'=>floatval($role)));
 
-		}
-		$this->ci->db->order_by('id_permisorol','asc');
-		$sql = $this->ci->db->get('PermisosRol'); //$this->db->select($roleSQL);
-		$data = $sql->result();
-		$perms = array();
-		foreach( $data as $row )
-		{
-			$pK = strtolower($this->getPermKeyFromID($row->id_permiso));
-			if ($pK == '') { continue; }
-			if ($row->valor === '1') {
-				$hP = true;
-			} else {
-				$hP = false;
-			}
-			$perms[$pK] = array('perm' => $pK,'inheritted' => true,'valor' => $hP,'name' => $this->getPermNameFromID($row->id_permiso),'id' => $row->id_permiso);
-		}
-		return $perms;
-	}
+                }
+                $this->ci->db->order_by('ID','asc');
+                $sql = $this->ci->db->get($this->role_perms_table); //$this->db->select($roleSQL);
+                $data = $sql->result();
+                $perms = array();
+                foreach( $data as $row )
+                {
+                        $pK = strtolower($this->getPermKeyFromID($row->PERMID));
+                        if ($pK == '') { continue; }
+                        if ($row->valor === '1') {
+                                $hP = true;
+                        } else {
+                                $hP = false;
+                        }
+                        $perms[$pK] = array('perm' => $pK,'inheritted' => true,'valor' => $hP,'name' => $this->getPermNameFromID($row->PERMID),'id' => $row->PERMID);
+                }
+                return $perms;
+        }
 
-	function getUserPerms($userID) {
-		//$strSQL = "SELECT * FROM `".DB_PREFIX."user_perms` WHERE `userID` = " . floatval($userID) . " ORDER BY `addDate` ASC";
+        function getUserPerms($userID) {
+                //$strSQL = "SELECT * FROM `".DB_PREFIX."user_perms` WHERE `userID` = " . floatval($userID) . " ORDER BY `addDate` ASC";
 
-		$this->ci->db->where('id_usuario',floatval($userID));
-		$this->ci->db->order_by('fecha','asc');
-		$sql = $this->ci->db->get('PermisosUsuario');
-		$data = $sql->result();
+                $this->ci->db->where('USERID',floatval($userID));
+                $this->ci->db->order_by('ADDDATE','asc');
+                $sql = $this->ci->db->get($this->user_perms_table);
+                $data = $sql->result();
 
-		$perms = array();
-		foreach( $data as $row )
-		{
-			$pK = strtolower($this->getPermKeyFromID($row->id_permiso));
-			if ($pK == '') { continue; }
-			if ($row->valor == '1') {
-				$hP = true;
-			} else {
-				$hP = false;
-			}
-			$perms[$pK] = array('perm' => $pK,'inheritted' => false,'valor' => $hP,'name' => $this->getPermNameFromID($row->id_permiso),'id' => $row->id_permiso);
-		}
-		return $perms;
-	}
+                $perms = array();
+                foreach( $data as $row )
+                {
+                        $pK = strtolower($this->getPermKeyFromID($row->PERMID));
+                        if ($pK == '') { continue; }
+                        if ($row->valor == '1') {
+                                $hP = true;
+                        } else {
+                                $hP = false;
+                        }
+                        $perms[$pK] = array('perm' => $pK,'inheritted' => false,'valor' => $hP,'name' => $this->getPermNameFromID($row->PERMID),'id' => $row->PERMID);
+                }
+                return $perms;
+        }
         
         function setPerm($perm){
+            $this->ci->load->library('uuid');
             $class = $this->routing->fetch_class();
             $method = $this->routing->fetch_method();
             $folder = strstr(uri_string(), '/'.$class, TRUE);
             $folders = explode('/',$folder);
             $permData = array(
-                'permKey' => $perm,
-                'nombre' => $perm,
-                'folder' => $folders[0] ? $folders[0] : '',
-                'method' => $method,
-                'class' => $class
+                'ID' => $this->ci->uuid->v4(),
+                'PERMKEY' => $perm,
+                'PERMNAME' => $perm,
+                'FOLDER' => $folders[0] ? $folders[0] : '',
+                'METHOD' => $method,
+                'CLASS' => $class
             );
             
-            $this->ci->db->insert('Permisos',$permData);
+            $this->ci->db->insert($this->perm_table,$permData);
         }
 
-	function hasRole($roleID) {
-		foreach($this->userRoles as $k => $v)
-		{
-			if (floatval($v) === floatval($roleID))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+        function hasRole($roleID) {
+                foreach($this->userRoles as $k => $v)
+                {
+                        if (floatval($v) === floatval($roleID))
+                        {
+                                return true;
+                        }
+                }
+                return false;
+        }
 
-	function hasPermission() {
+        function hasPermission() {
                 $class = $this->routing->fetch_class();
                 $method = $this->routing->fetch_method();
                 $folder = strstr(uri_string(), $class, TRUE);
@@ -244,12 +251,13 @@ class acl
                             } else {
                                 redirect('home');
                             }
-                        }else
+                        }else{
                             redirect('home');
+                        }
                     }
                 }elseif($permKey != strstr($permKey,'login'))
                     redirect('login');
-	}
+        }
         
         private function check_isvalidated(){
             $permKey = $this->ci->uri->uri_string();

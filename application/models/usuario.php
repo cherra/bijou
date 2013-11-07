@@ -12,16 +12,15 @@
  */
 class Usuario extends CI_Model {
     
-    private $tbl = "Usuario";
-    private $tbl_permisos = "PermisosUsuario";
-    private $tbl_roles = "RolesUsuario";
+    private $tbl = "PEOPLE";
+    private $tbl_permisos = "PEOPLEPERMS";
+    private $tbl_roles = "PEOPLEROLES";
     
     function count_all( $filtro = NULL ) {
         if(!empty($filtro)){
             $filtro = explode(' ', $filtro);
             foreach($filtro as $f){
-                $this->db->or_like('nombre', $f);
-                $this->db->or_like('apellido', $f);
+                $this->db->or_like('NAME', $f);
             }
         }
         $query = $this->db->get($this->tbl);
@@ -37,11 +36,10 @@ class Usuario extends CI_Model {
         if(!empty($filtro)){
             $filtro = explode(' ', $filtro);
             foreach($filtro as $f){
-                $this->db->or_like('nombre', $f);
-                $this->db->or_like('apellido', $f);
+                $this->db->or_like('NAME', $f);
             }
         }
-        $this->db->order_by('nombre','asc');
+        $this->db->order_by('NAME','asc');
         return $this->db->get($this->tbl, $limit, $offset);
     }
     
@@ -51,7 +49,7 @@ class Usuario extends CI_Model {
     * ***********************************************************************
     */
     function get_by_id($id) {
-        $this->db->where('id_usuario', $id);
+        $this->db->where('ID', $id);
         return $this->db->get($this->tbl);
     }
     
@@ -71,7 +69,7 @@ class Usuario extends CI_Model {
     * ***********************************************************************
     */
     function update($id, $usuario) {
-        $this->db->where('id_usuario', $id);
+        $this->db->where('ID', $id);
         $this->db->update($this->tbl, $usuario);
     }
 
@@ -81,7 +79,7 @@ class Usuario extends CI_Model {
     * ***********************************************************************
     */
     function delete($id) {
-        $this->db->where('id_usuario', $id);
+        $this->db->where('ID', $id);
         $this->db->delete($this->tbl);
     }
     
@@ -91,14 +89,14 @@ class Usuario extends CI_Model {
     * ***********************************************************************
     */
     function get_permiso_by_id($id_permiso, $id_usuario) {
-        $this->db->where('id_usuario', $id_usuario);
-        $this->db->where('id_permiso', $id_permiso);
+        $this->db->where('USERID', $id_usuario);
+        $this->db->where('PERMID', $id_permiso);
         return $this->db->get($this->tbl_permisos);
     }
     
     function update_permisos( $id, $permisos ){
         if(!empty($permisos)){
-            $this->db->delete($this->tbl_permisos, array('id_usuario' => $id));
+            $this->db->delete($this->tbl_permisos, array('USERID' => $id));
             $this->db->insert_batch($this->tbl_permisos, $permisos);
         }
     }
@@ -109,14 +107,14 @@ class Usuario extends CI_Model {
     * ***********************************************************************
     */
     function get_rol_by_id($id_rol, $id_usuario) {
-        $this->db->where('id_usuario', $id_usuario);
-        $this->db->where('id_rol', $id_rol);
+        $this->db->where('USERID', $id_usuario);
+        $this->db->where('ROLEID', $id_rol);
         return $this->db->get($this->tbl_roles);
     }
     
     function update_roles( $id, $roles ){
         if(!empty($roles)){
-            $this->db->delete($this->tbl_roles, array('id_usuario' => $id));
+            $this->db->delete($this->tbl_roles, array('USERID' => $id));
             $this->db->insert_batch($this->tbl_roles, $roles);
         }
     }

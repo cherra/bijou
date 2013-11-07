@@ -12,8 +12,8 @@
  */
 class Rol extends CI_Model {
     
-    private $tbl = "Roles";
-    private $tbl_permisos = "PermisosRol";
+    private $tbl = "ROLES";
+    private $tbl_permisos = "ROLEPERMS";
     
     function count_all() {
         return $this->db->count_all($this->tbl);
@@ -29,7 +29,7 @@ class Rol extends CI_Model {
     * ***********************************************************************
     */
     function get_paged_list($limit = 10, $offset = 0) {
-        $this->db->order_by('id_rol','desc');
+        $this->db->order_by('ID','desc');
         return $this->db->get($this->tbl, $limit, $offset);
     }
     
@@ -39,7 +39,7 @@ class Rol extends CI_Model {
     * ***********************************************************************
     */
     function get_by_id($id) {
-        $this->db->where('id_rol', $id);
+        $this->db->where('ID', $id);
         return $this->db->get($this->tbl);
     }
     
@@ -59,7 +59,7 @@ class Rol extends CI_Model {
     * ***********************************************************************
     */
     function update($id, $rol) {
-        $this->db->where('id_rol', $id);
+        $this->db->where('ID', $id);
         $this->db->update($this->tbl, $rol);
     }
 
@@ -69,7 +69,7 @@ class Rol extends CI_Model {
     * ***********************************************************************
     */
     function delete($id) {
-        $this->db->where('id_rol', $id);
+        $this->db->where('ID', $id);
         $this->db->delete($this->tbl);
     }
     
@@ -79,14 +79,14 @@ class Rol extends CI_Model {
     * ***********************************************************************
     */
     function get_permiso_by_id($id_permiso, $id_rol) {
-        $this->db->where('id_rol', $id_rol);
-        $this->db->where('id_permiso', $id_permiso);
+        $this->db->where('ROLEID', $id_rol);
+        $this->db->where('PERMID', $id_permiso);
         return $this->db->get($this->tbl_permisos);
     }
     
     function update_permisos( $id, $permisos ){
         if(!empty($permisos)){
-            $this->db->delete($this->tbl_permisos, array('id_rol' => $id));
+            $this->db->delete($this->tbl_permisos, array('ID' => $id));
             $this->db->insert_batch($this->tbl_permisos, $permisos);
         }
     }

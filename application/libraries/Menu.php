@@ -22,30 +22,30 @@ class Menu {
     }
     
     function get_metodos( $folder ){
-        $this->ci->db->where('folder', $folder);
-        $this->ci->db->where('menu', '1');
-        $this->ci->db->order_by('class, method');
-        $query = $this->ci->db->get('Permisos');
+        $this->ci->db->where('FOLDER', $folder);
+        $this->ci->db->where('MENU', '1');
+        $this->ci->db->order_by('CLASS, METHOD');
+        $query = $this->ci->db->get('PERMS');
         return  $query->result();
     }
     
     function get_clases( $folder ){
-        $this->ci->db->where('LENGTH(folder) > 0');
-        $this->ci->db->where('menu', '1');
-        $this->ci->db->where('folder', $folder);
-        $this->ci->db->group_by('class');
-        $this->ci->db->order_by('class');
-        $query = $this->ci->db->get('Permisos');
+        $this->ci->db->where('LENGTH(FOLDER) > 0');
+        $this->ci->db->where('MENU', '1');
+        $this->ci->db->where('FOLDER', $folder);
+        $this->ci->db->group_by('CLASS');
+        $this->ci->db->order_by('CLASS');
+        $query = $this->ci->db->get('PERMS');
         return  $query->result_array();
     }
     
     function get_folders(){
-        $this->ci->db->select('folder');
-        $this->ci->db->where('LENGTH(folder) > 0');
-        $this->ci->db->where('menu', '1');
-        $this->ci->db->group_by('folder');
-        $this->ci->db->order_by('folder');
-        $query = $this->ci->db->get('Permisos');
+        $this->ci->db->select('FOLDER');
+        $this->ci->db->where('LENGTH(FOLDER) > 0');
+        $this->ci->db->where('MENU', '1');
+        $this->ci->db->group_by('FOLDER');
+        $this->ci->db->order_by('FOLDER');
+        $query = $this->ci->db->get('PERMS');
         return  $query->result();
     }
         

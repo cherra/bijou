@@ -77,12 +77,12 @@
                 <li <?php 
                 // Si el primer segmento del URI es igual al folder quiere decir que es la opción seleccionada
                 // y se marca como activa para resaltarla
-                if( $this->uri->segment(1) == $folder->folder){
+                if( $this->uri->segment(1) == $folder->FOLDER){
                     echo 'class="active"';
-                    $folder_activo = $folder->folder;
+                    $folder_activo = $folder->FOLDER;
                 }
                 ?>><?php 
-                echo anchor($folder->folder.'/'.$folder->folder, ucfirst(strtolower($folder->folder)), 'class="navbar-link"'); ?></li>
+                echo anchor($folder->FOLDER.'/'.$folder->FOLDER, ucfirst(strtolower($folder->FOLDER)), 'class="navbar-link"'); ?></li>
                 <?php } ?>
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -127,21 +127,21 @@
                         $clase = '';
                         $metodos = $this->menu->get_metodos($folder_activo);
                         foreach ( $metodos as $metodo ){
-                            if($clase != $metodo->class){
-                                $clase = $metodo->class;
+                            if($clase != $metodo->CLASS){
+                                $clase = $metodo->CLASS;
                         ?>
-                        <li class="nav-header"><?php echo ucfirst(str_replace('_',' ',$metodo->class)); ?></li>
+                        <li class="nav-header"><?php echo ucfirst(str_replace('_',' ',$metodo->CLASS)); ?></li>
                         <?php
                             }
                             // Link para el menú
-                            $link = $metodo->folder.'/'.$metodo->class.'/'.$metodo->method;
+                            $link = $metodo->FOLDER.'/'.$metodo->CLASS.'/'.$metodo->METHOD;
                         ?>
                                 <li <?php 
                                 // Si el link es igual al URI quiere decir que es la opción seleccionada
                                 // y se marca como activa para resaltarla
-                                if( strpos(current_url(), $metodo->folder.'/'.$metodo->class.'/'.$metodo->method) ) 
+                                if( strpos(current_url(), $metodo->FOLDER.'/'.$metodo->CLASS.'/'.$metodo->METHOD) ) 
                                     echo 'class="active"'; 
-                                ?>><?php echo anchor($link, '<span class="glyphicon glyphicon-'.$metodo->icon.'"></span> '.$metodo->nombre); ?></li>
+                                ?>><?php echo anchor($link, '<span class="glyphicon glyphicon-'.$metodo->ICON.'"></span> '.$metodo->PERMNAME); ?></li>
                         <?php
                         }
                         ?>

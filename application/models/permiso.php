@@ -6,7 +6,7 @@
  */
 class Permiso extends CI_Model {
     
-    private $tbl = "Permisos";
+    private $tbl = "PERMS";
     
     function count_all() {
         return $this->db->count_all($this->tbl);
@@ -18,7 +18,7 @@ class Permiso extends CI_Model {
     * ***********************************************************************
     */
     function get_paged_list($limit = null, $offset = 0) {
-        $this->db->order_by('folder, class, method','asc');
+        $this->db->order_by('FOLDER, CLASS, METHOD','asc');
         return $this->db->get($this->tbl, $limit, $offset);
     }
     
@@ -28,7 +28,7 @@ class Permiso extends CI_Model {
     * ***********************************************************************
     */
     function get_by_id($id) {
-        $this->db->where('id_permiso', $id);
+        $this->db->where('ID', $id);
         return $this->db->get($this->tbl);
     }
     
@@ -38,7 +38,7 @@ class Permiso extends CI_Model {
     * ***********************************************************************
     */
     function get_all() {
-        $this->db->order_by('folder, class, method');
+        $this->db->order_by('FOLDER, CLASS, METHOD','asc');
         return $this->db->get($this->tbl);
     }
     
@@ -58,7 +58,7 @@ class Permiso extends CI_Model {
     * ***********************************************************************
     */
     function update($id, $rol) {
-        $this->db->where('id_permiso', $id);
+        $this->db->where('ID', $id);
         $this->db->update($this->tbl, $rol);
     }
 
@@ -68,7 +68,7 @@ class Permiso extends CI_Model {
     * ***********************************************************************
     */
     function delete($id) {
-        $this->db->where('id_permiso', $id);
+        $this->db->where('ID', $id);
         $this->db->delete($this->tbl);
     }
 }
