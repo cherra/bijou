@@ -71,6 +71,7 @@ class Rol extends CI_Model {
     function delete($id) {
         $this->db->where('ID', $id);
         $this->db->delete($this->tbl);
+        return $this->db->affected_rows();
     }
     
     /**
@@ -85,12 +86,13 @@ class Rol extends CI_Model {
     }
     
     function update_permisos( $id, $permisos ){
+        $this->db->delete($this->tbl_permisos, array('ROLEID' => $id));
         if(!empty($permisos)){
-            $this->db->delete($this->tbl_permisos, array('ID' => $id));
             $this->db->insert_batch($this->tbl_permisos, $permisos);
         }
+        return $this->db->affected_rows();
     }
-
+    
 }
 
 ?>

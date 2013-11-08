@@ -96,10 +96,11 @@ class Usuario extends CI_Model {
     }
     
     function update_permisos( $id, $permisos ){
+        $this->db->delete($this->tbl_permisos, array('USERID' => $id));
         if(!empty($permisos)){
-            $this->db->delete($this->tbl_permisos, array('USERID' => $id));
             $this->db->insert_batch($this->tbl_permisos, $permisos);
         }
+        return $this->db->affected_rows();
     }
     
     /**
@@ -114,10 +115,11 @@ class Usuario extends CI_Model {
     }
     
     function update_roles( $id, $roles ){
+        $this->db->delete($this->tbl_roles, array('USERID' => $id));
         if(!empty($roles)){
-            $this->db->delete($this->tbl_roles, array('USERID' => $id));
             $this->db->insert_batch($this->tbl_roles, $roles);
         }
+        return $this->db->affected_rows();
     }
 
 }

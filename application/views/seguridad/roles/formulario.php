@@ -8,15 +8,15 @@
         </div>
     </div>
     <div class="form-group">
-        <label class="col-sm-2" for="nombre">Nombre</label>
+        <label class="col-sm-2" for="NAME">Nombre</label>
         <div class="col-sm-6 col-md-4">
-            <input type="text" id="nombre" name="nombre" class="form-control required" value="<?php echo (isset($datos->nombre) ? $datos->nombre : ''); ?>" placeholder="Nombre">
+            <input type="text" id="NAME" name="NAME" class="form-control required" value="<?php echo (isset($datos->NAME) ? $datos->NAME : ''); ?>" placeholder="Nombre">
         </div>
     </div>
     <div class="form-group">
-        <label class="col-sm-2" for="icon">Descripción</label>
+        <label class="col-sm-2" for="DESCRIPTION">Descripción</label>
         <div class="col-sm-6 col-md-4">
-            <input type="text" id="descripcion" name="descripcion" class="form-control" value="<?php echo (isset($datos->descripcion) ? $datos->descripcion : ''); ?>" placeholder="Descripción">
+            <input type="text" id="DESCRIPTION" name="DESCRIPTION" class="form-control" value="<?php echo (isset($datos->DESCRIPTION) ? $datos->DESCRIPTION : ''); ?>" placeholder="Descripción">
         </div>
     </div>
 <?php echo form_close(); ?>
@@ -25,7 +25,7 @@
     
 $(function () {
    
-    $('#nombre').focus();
+    $('#NAME').focus();
     
 });
 

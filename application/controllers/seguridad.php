@@ -130,11 +130,11 @@ class Seguridad extends CI_Controller{
         $this->table->set_heading('Nombre', 'Descripción', '', '', '');
         foreach ($roles as $rol) {
                 $this->table->add_row(
-                        $rol->nombre,
-                        $rol->descripcion,
-                        anchor('seguridad/roles_permisos/' . $rol->id_rol . '/' . $offset, '<span class="glyphicon glyphicon-lock"></span>'),
-                        anchor('seguridad/roles_update/' . $rol->id_rol . '/' . $offset, '<span class="glyphicon glyphicon-edit"></span>'),
-                        anchor('seguridad/roles_delete/' . $rol->id_rol . '/' . $offset, '<span class="glyphicon glyphicon-remove"></span>')
+                        $rol->NAME,
+                        $rol->DESCRIPTION,
+                        anchor('seguridad/roles_permisos/' . $rol->ID . '/' . $offset, '<span class="glyphicon glyphicon-lock"></span>'),
+                        anchor('seguridad/roles_update/' . $rol->ID . '/' . $offset, '<span class="glyphicon glyphicon-edit"></span>'),
+                        anchor('seguridad/roles_delete/' . $rol->ID . '/' . $offset, '<span class="glyphicon glyphicon-remove"></span>')
                 );
         }
         $data['table'] = $this->table->generate();
@@ -151,13 +151,12 @@ class Seguridad extends CI_Controller{
         $data['mensaje'] = '';
         $data['action'] = 'seguridad/roles_add/'.$offset;
         
-        if ($this->input->post()) {
-            $rol = array(
-                'nombre' => $this->input->post('nombre', true),
-                'descripcion' => $this->input->post('descripcion', true)
-            );
-            
+        if ( ($rol = $this->input->post()) ){
             $this->load->model('rol', 'r');
+            
+            $this->load->library('uuid');
+            $rol['ID'] = $this->uuid->v4();
+            
             $this->r->save($rol);
             
             $this->session->set_flashdata('mensaje',$this->config->item('create_success'));
@@ -167,7 +166,6 @@ class Seguridad extends CI_Controller{
     }
     
     public function roles_update( $id = NULL, $offset = 0 ) {
-
         if (empty($id)) {
             redirect('seguridad/roles_lista');
         }
@@ -181,11 +179,7 @@ class Seguridad extends CI_Controller{
         $data['mensaje'] = '';
         $data['action'] = 'seguridad/roles_update/' . $id . '/' . $offset;
 
-        if ($this->input->post()) {
-            $rol = array(
-                        'nombre' => $this->input->post('nombre'),
-                        'descripcion' => $this->input->post('descripcion')
-                        );
+        if ( ($rol = $this->input->post()) ){
             $this->r->update($id, $rol);
             $this->session->set_flashdata('mensaje',$this->config->item('update_success'));
             redirect($this->folder.$this->clase.'roles_update/'.$id . '/' . $offset);
@@ -197,7 +191,14 @@ class Seguridad extends CI_Controller{
     public function roles_delete( $id = NULL, $offset = 0 ){
         if (!empty($id)) {
             $this->load->model('rol', 'r');
-            $this->r->delete($id);
+            $this->db->trans_start();
+            $this->r->update_permisos($id, NULL);
+            $resultado = $this->r->delete($id);
+            $this->db->trans_complete();
+            if($resultado > 0)
+                $this->session->set_flashdata('mensaje',$this->config->item('update_success'));
+            else
+                $this->session->set_flashdata('mensaje',$this->config->item('error'));
         }
         redirect('seguridad/roles_lista/'.$offset);
     }
@@ -218,18 +219,18 @@ class Seguridad extends CI_Controller{
         $data['mensaje'] = '';
         $data['action'] = 'seguridad/roles_permisos/' . $id. '/' . $offset;
 
-        $rol = $this->r->get_by_id($id)->row();
-        $data['datos'] = $rol;
+        $data['datos'] = $this->r->get_by_id($id)->row();
         
         /* Si llegan datos por POST, se insertan en la base de datos*/
-        if ($this->input->post()) {
+        if ( ($datos = $this->input->post()) ){
+            //unset($permisos['marcar_todos']);  // Variable que se pasa por post solo para que si no se seleccionó ningún checkbox $this->input->post de TRUE
             $perms = array();
-            if($this->input->post('permisos')){
-                foreach ($this->input->post('permisos') as $permiso){
+            if( ($permisos = $this->input->post('permisos')) ){
+                foreach ($permisos as $permiso){
                     $perms[] = array(
-                        'id_rol' => $id,
-                        'id_permiso' => $permiso,
-                        'valor' => '1'
+                        'ROLEID' => $id,
+                        'PERMID' => $permiso,
+                        'VALUE' => '1'
                     );
                 }
             }
@@ -249,10 +250,10 @@ class Seguridad extends CI_Controller{
         $this->table->set_heading('Menú','Acción', 'Ruta', 'Activo');
         foreach ($permisos as $permiso) {
             $this->table->add_row(
-                    strtoupper($permiso->folder), 
-                    $permiso->nombre, 
-                    $permiso->permKey,
-                    '<input type="checkbox" name="permisos[]" value="'.$permiso->id_permiso.'" '.($this->r->get_permiso_by_id($permiso->id_permiso, $id)->num_rows() > 0 ? 'checked' : '').'/>'
+                    strtoupper($permiso->FOLDER), 
+                    $permiso->PERMNAME, 
+                    $permiso->PERMKEY,
+                    '<input type="checkbox" name="permisos[]" value="'.$permiso->ID.'" '.($this->r->get_permiso_by_id($permiso->ID, $id)->num_rows() > 0 ? 'checked' : '').'/>'
             );
         }
         $data['table'] = $this->table->generate();
@@ -375,11 +376,16 @@ class Seguridad extends CI_Controller{
     public function usuarios_delete( $id = NULL, $offset = 0 ){
         if (!empty($id)) {
             $this->load->model('usuario', 'u');
+            $this->db->trans_start();
+            $this->u->update_roles($id, NULL);
+            $this->u->update_permisos($id, NULL);
             $resultado = $this->u->delete($id);
+            $this->db->trans_complete();
             if($resultado > 0)
                 $this->session->set_flashdata('mensaje',$this->config->item('update_success'));
             else
                 $this->session->set_flashdata('mensaje',$this->config->item('error'));
+            
         }
         redirect('seguridad/usuarios_lista/'.$offset);
     }
@@ -406,8 +412,8 @@ class Seguridad extends CI_Controller{
         /* Si llegan datos por POST, se insertan en la base de datos*/
         if ($this->input->post()) {
             $perms = array();
-            if($this->input->post('permisos')){
-                foreach ($this->input->post('permisos') as $permiso){
+            if( ($permisos = $this->input->post('permisos')) ){
+                foreach ($permisos as $permiso){
                     $perms[] = array(
                         'USERID' => $id,
                         'PERMID' => $permiso,

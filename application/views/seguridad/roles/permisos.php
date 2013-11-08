@@ -8,9 +8,10 @@
         </div>
     </div>
     <div class="form-group">
-        <label class="col-sm-2" for="nombre">Nombre</label>
+        <label class="col-sm-2" for="NAME">Nombre</label>
         <div class="col-sm-6 col-md-4">
-            <p><?php echo (isset($datos->nombre) ? $datos->nombre : ''); ?></p>
+            <p><?php echo (isset($datos->NAME) ? $datos->NAME : ''); ?></p>
+            <input type="hidden" name="nada" /> <!-- Solo para que valide TRUE la petición POST en caso de que no se seleccione ningún permiso -->
         </div>
     </div>
     <div class="form-group">
