@@ -330,7 +330,7 @@ class Seguridad extends CI_Controller{
         $data['action'] = 'seguridad/usuarios_update/' . $id . '/' .$offset;
 
         if ( ($usuario = $this->input->post()) ){
-            if(strlen($usuario['password']) > 0){
+            if(strlen($usuario['APPPASSWORD']) > 0){
                 $usuario['APPPASSWORD'] = 'sha1:'.sha1($usuario['APPPASSWORD']);
             }else{
                 unset($usuario['APPPASWORD']);
@@ -362,7 +362,11 @@ class Seguridad extends CI_Controller{
             $this->load->model('usuario', 'u');
             $this->load->library('uuid');
             
+            if(strlen($usuario['APPPASSWORD']) > 0){
+                $usuario['APPPASSWORD'] = 'sha1:'.sha1($usuario['APPPASSWORD']);
+            }
             unset($usuario['confirmar_password']);
+            
             $usuario['ID'] = $this->uuid->v4();
             $this->u->save($usuario);
             
