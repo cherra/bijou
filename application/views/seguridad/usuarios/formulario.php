@@ -8,27 +8,15 @@
         </div>
     </div>
     <div class="form-group">
-        <label class="col-sm-2" for="nombre">Nombre</label>
+        <label class="col-sm-2" for="NAME">Nombre</label>
         <div class="col-sm-6 col-md-4">
-            <input type="text" id="nombre" name="nombre" class="form-control required" value="<?php echo (isset($datos->nombre) ? $datos->nombre : ''); ?>" placeholder="Nombre">
+            <input type="text" id="NAME" name="NAME" class="form-control required" value="<?php echo (isset($datos->NAME) ? $datos->NAME : ''); ?>" placeholder="Nombre" autocomplete="off">
         </div>
     </div>
     <div class="form-group">
-        <label class="col-sm-2" for="apellido">Apellidos</label>
+        <label class="col-sm-2" for="APPPASSWORD">Contraseña</label>
         <div class="col-sm-6 col-md-4">
-            <input type="text" name="apellido" class="form-control required" value="<?php echo (isset($datos->apellido) ? $datos->apellido : ''); ?>" placeholder="Apellidos">
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-sm-2" for="username">Nombre de usuario</label>
-        <div class="col-sm-6 col-md-4">
-            <input type="text" name="username" class="form-control" value="<?php echo (isset($datos->username) ? $datos->username : ''); ?>" placeholder="Nombre de usuario">
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-sm-2" for="password">Contraseña</label>
-        <div class="col-sm-6 col-md-4">
-            <input type="password" id="password" name="password" class="form-control" placeholder="Contraseña">
+            <input type="password" id="APPPASSWORD" name="APPPASSWORD" class="form-control" placeholder="Contraseña" autocomplete="off">
         </div>
     </div>
     <div class="form-group">
@@ -38,22 +26,43 @@
         </div>
     </div>
     <div class="form-group">
-        <label class="col-sm-2" for="activo">Activo?</label>
+        <label class="col-sm-2" for="VISIBLE">Activo?</label>
         <div class="col-sm-6 col-md-4">
-            <input type="checkbox" name="activo" value="s" <?php 
-            if(isset($datos->activo)){
-                echo $datos->activo == 's' ? 'checked' : ''; 
+            <input type="checkbox" name="VISIBLE" value="1" <?php 
+            if(isset($datos->VISIBLE)){
+                echo ord($datos->VISIBLE) == 1 ? 'checked' : ''; 
             }
             ?>>
         </div>
     </div>
+    <?php
+    if(isset($roles)){
+    ?>
+    <div class="form-group">
+        <label class="col-sm-2" for="ROLE">Rol</label>
+        <div class="col-sm-6 col-md-4">
+            <select name="ROLE" class="form-control">
+                <option value="">Selecciona un rol...</option>
+                <?php
+                foreach($roles as $rol){
+                ?>
+                <option value="<?php echo $rol->ID; ?>" <?php if(isset($datos->ROLE) && ($datos->ROLE == $rol->ID)) echo "selected"; ?>><?php echo $rol->NAME; ?></option>
+                <?php
+                }
+                ?>
+            </select>
+        </div>
+    </div>
+    <?php
+    }
+    ?>
 <?php echo form_close(); ?>
 
 <script type="text/javascript">
     
 $(function () {
    
-    $('#nombre').focus();
+    $('#NAME').focus();
     
 });
 

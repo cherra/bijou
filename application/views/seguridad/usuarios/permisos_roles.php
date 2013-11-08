@@ -8,15 +8,9 @@
         </div>
     </div>
     <div class="form-group">
-        <label class="col-sm-2" for="nombre">Nombre</label>
+        <label class="col-sm-2" for="NAME">Nombre</label>
         <div class="col-sm-6 col-md-4">
-            <p><?php echo (isset($datos->nombre) ? $datos->nombre : ''); ?></p>
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-sm-2" for="apellido">Apellido</label>
-        <div class="col-sm-6 col-md-4">
-            <p><?php echo (isset($datos->apellido) ? $datos->apellido : ''); ?></p>
+            <p><?php echo (isset($datos->NAME) ? $datos->NAME : ''); ?></p>
         </div>
     </div>
     <div class="form-group">

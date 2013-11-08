@@ -182,7 +182,7 @@
             validClass: "has-success",
             rules: {
                 confirmar_password: {
-                    equalTo: "#password"
+                    equalTo: "#APPPASSWORD"
                 }
             },
             highlight: function(element, errorClass, validClass) {

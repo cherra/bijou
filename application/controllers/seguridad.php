@@ -267,6 +267,7 @@ class Seguridad extends CI_Controller{
     public function usuarios_lista( $offset = 0 ){
         
         $this->load->model('usuario','u');
+        $this->load->model('rol','r');
         
         // Filtro de busqueda (se almacenan en la sesión a través de un hook)
         $filtro = $this->session->userdata('filtro');
@@ -291,19 +292,18 @@ class Seguridad extends CI_Controller{
         $this->table->set_empty('&nbsp;');
         $tmpl = array ( 'table_open'  => '<table class="' . $this->config->item('tabla_css') . '">' );
         $this->table->set_template($tmpl);
-        $this->table->set_heading('Nombre', 'Apellido', 'Username', 'Activo', '');
+        $this->table->set_heading('Nombre', 'Rol', 'Activo', '', '', '', '');
         
-        $i = 0 + $offset;
         foreach ($usuarios as $usuario) {
+            $rol = $this->r->get_by_id($usuario->ROLE)->row();
                 $this->table->add_row(
-                        $usuario->nombre,
-                        $usuario->apellido,
-                        $usuario->username,
-                        $usuario->activo == 's' ? '<span class="glyphicon glyphicon-ok"></span>' : '',
-                        anchor('seguridad/usuarios_permisos/' . $usuario->id_usuario. '/' . $offset, '<span class="glyphicon glyphicon-lock"></span>'),
-                        anchor('seguridad/usuarios_roles/' . $usuario->id_usuario. '/' . $offset, '<span class="glyphicon glyphicon-user"></span>'),
-                        anchor('seguridad/usuarios_update/' . $usuario->id_usuario. '/' . $offset, '<span class="glyphicon glyphicon-edit"></span>'),
-                        anchor('seguridad/usuarios_delete/' . $usuario->id_usuario. '/' . $offset, '<span class="glyphicon glyphicon-remove"></span>')
+                        $usuario->NAME,
+                        $rol->NAME,
+                        ord($usuario->VISIBLE) === 1 ? '<span class="glyphicon glyphicon-ok"></span>' : '',
+                        anchor('seguridad/usuarios_permisos/' . $usuario->ID. '/' . $offset, '<span class="glyphicon glyphicon-lock"></span>'),
+                        anchor('seguridad/usuarios_roles/' . $usuario->ID. '/' . $offset, '<span class="glyphicon glyphicon-user"></span>'),
+                        anchor('seguridad/usuarios_update/' . $usuario->ID. '/' . $offset, '<span class="glyphicon glyphicon-edit"></span>'),
+                        anchor('seguridad/usuarios_delete/' . $usuario->ID. '/' . $offset, '<span class="glyphicon glyphicon-remove"></span>')
                 );
         }
         
@@ -321,6 +321,7 @@ class Seguridad extends CI_Controller{
         }
         
         $this->load->model('usuario','u');
+        $this->load->model('rol','r');
 
         $data['titulo'] = 'Usuarios <small>Modificar</small>';
         $data['atributos_form'] = array('id' => 'form', 'class' => 'form-horizontal');
@@ -329,60 +330,58 @@ class Seguridad extends CI_Controller{
         $data['mensaje'] = '';
         $data['action'] = 'seguridad/usuarios_update/' . $id . '/' .$offset;
 
-        if ($this->input->post()) {
-            if(strlen($this->input->post('password')) > 0){
-                $usuario = array(
-                    'nombre' => $this->input->post('nombre'),
-                    'apellido' => $this->input->post('apellido'),
-                    'username' => $this->input->post('username'),
-                    'password' => sha1($this->input->post('password')),
-                    'activo' => $this->input->post('activo')
-                );
+        if ( ($usuario = $this->input->post()) ){
+            if(strlen($usuario['password']) > 0){
+                $usuario['APPPASSWORD'] = 'sha1:'.sha1($usuario['APPPASSWORD']);
             }else{
-                $usuario = array(
-                    'nombre' => $this->input->post('nombre'),
-                    'apellido' => $this->input->post('apellido'),
-                    'username' => $this->input->post('username'),
-                    'activo' => $this->input->post('activo')
-                );
+                unset($usuario['APPPASWORD']);
+                unset($usuario['confirmar_password']);
             }
+            
+            if(!isset($usuario['VISIBLE']))
+                $usuario['VISIBLE'] = FALSE;
+            
             $this->u->update($id, $usuario);
             $this->session->set_flashdata('mensaje',$this->config->item('update_success'));
             redirect($this->folder.$this->clase.'usuarios_update/'.$id . '/' . $offset);
         }
-        $usuario = $this->u->get_by_id($id)->row();
-        $data['datos'] = $usuario;
+        $data['datos'] = $this->u->get_by_id($id)->row();
+        $data['roles'] = $this->r->get_all()->result();
         $this->load->view('seguridad/usuarios/formulario', $data);
     }
     
     public function usuarios_add( $offset = 0 ) {
+        $this->load->model('rol','r');
+        
         $data['titulo'] = 'Usuarios <small>Agregar</small>';
         $data['atributos_form'] = array('id' => 'form', 'class' => 'form-horizontal');
         $data['link_back'] = 'seguridad/usuarios_lista/'.$offset;
         $data['mensaje'] = '';
         $data['action'] = 'seguridad/usuarios_add/'.$offset;
         
-        if ($this->input->post()) {
-            $usuario = array(
-                'nombre' => $this->input->post('nombre', true),
-                'username' => $this->input->post('username', true),
-                'password' => sha1($this->input->post('password')),
-                'activo' => $this->input->post('activo', true)
-            );
-            
+        if ( ($usuario = $this->input->post()) ){
             $this->load->model('usuario', 'u');
+            $this->load->library('uuid');
+            
+            unset($usuario['confirmar_password']);
+            $usuario['ID'] = $this->uuid->v4();
             $this->u->save($usuario);
             
             $this->session->set_flashdata('mensaje',$this->config->item('create_success'));
             redirect($this->folder.$this->clase.'usuarios_add/'.$offset);
         }
+        $data['roles'] = $this->r->get_all()->result();
         $this->load->view('seguridad/usuarios/formulario', $data);
     }
     
     public function usuarios_delete( $id = NULL, $offset = 0 ){
         if (!empty($id)) {
             $this->load->model('usuario', 'u');
-            $this->u->delete($id);
+            $resultado = $this->u->delete($id);
+            if($resultado > 0)
+                $this->session->set_flashdata('mensaje',$this->config->item('update_success'));
+            else
+                $this->session->set_flashdata('mensaje',$this->config->item('error'));
         }
         redirect('seguridad/usuarios_lista/'.$offset);
     }
@@ -412,9 +411,9 @@ class Seguridad extends CI_Controller{
             if($this->input->post('permisos')){
                 foreach ($this->input->post('permisos') as $permiso){
                     $perms[] = array(
-                        'id_usuario' => $id,
-                        'id_permiso' => $permiso,
-                        'valor' => '1'
+                        'USERID' => $id,
+                        'PERMID' => $permiso,
+                        'VALUE' => '1'
                     );
                 }
             }
@@ -434,10 +433,10 @@ class Seguridad extends CI_Controller{
         $this->table->set_heading('Menú','Acción', 'Ruta', 'Activo');
         foreach ($permisos as $permiso) {
             $this->table->add_row(
-                    strtoupper($permiso->folder), 
-                    $permiso->nombre, 
-                    $permiso->permKey,
-                    '<input type="checkbox" name="permisos[]" value="'.$permiso->id_permiso.'" '.($this->u->get_permiso_by_id($permiso->id_permiso, $id)->num_rows() > 0 ? 'checked' : '').'/>'
+                    strtoupper($permiso->FOLDER), 
+                    $permiso->PERMNAME, 
+                    $permiso->PERMKEY,
+                    '<input type="checkbox" name="permisos[]" value="'.$permiso->ID.'" '.($this->u->get_permiso_by_id($permiso->ID, $id)->num_rows() > 0 ? 'checked' : '').'/>'
             );
         }
         $data['table'] = $this->table->generate();
@@ -468,8 +467,8 @@ class Seguridad extends CI_Controller{
             if($this->input->post('roles')){
                 foreach ($this->input->post('roles') as $rol){
                     $roles[] = array(
-                        'id_usuario' => $id,
-                        'id_rol' => $rol
+                        'USERID' => $id,
+                        'ROLEID' => $rol
                     );
                 }
             }
@@ -492,9 +491,9 @@ class Seguridad extends CI_Controller{
         $this->table->set_heading('Nombre', 'Descripción');
         foreach ($roles as $rol) {
             $this->table->add_row(
-                    $rol->nombre, 
-                    $rol->descripcion, 
-                    '<input type="checkbox" name="roles[]" value="'.$rol->id_rol.'" '.($this->u->get_rol_by_id($rol->id_rol, $id)->num_rows() > 0 ? 'checked' : '').'/>'
+                    $rol->NAME, 
+                    $rol->DESCRIPTION, 
+                    '<input type="checkbox" name="roles[]" value="'.$rol->ID.'" '.($this->u->get_rol_by_id($rol->ID, $id)->num_rows() > 0 ? 'checked' : '').'/>'
             );
         }
         $data['table'] = $this->table->generate();
@@ -517,8 +516,8 @@ class Seguridad extends CI_Controller{
         $data['mensaje'] = '';
         $data['action'] = 'seguridad/usuarios_password/' . $id;
 
-        if ( $this->input->post() ) {
-            $usuario = array('password' => sha1($this->input->post('password')));
+        if ( ($datos = $this->input->post()) ) {
+            $usuario = array('APPPASSWORD' => 'sha1:'.sha1($datos['APPPASSWORD']));
             $this->u->update($id, $usuario);
             $this->session->set_flashdata('mensaje',$this->config->item('update_success'));
             redirect($this->folder.$this->clase.'usuarios_password/'.$id);

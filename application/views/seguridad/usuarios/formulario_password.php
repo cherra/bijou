@@ -8,27 +8,15 @@
         </div>
     </div>
     <div class="form-group">
-        <label class="col-sm-2" for="nombre">Nombre</label>
+        <label class="col-sm-2" for="NAME">Nombre</label>
         <div class="col-sm-6 col-md-4">
-            <p><?php echo (isset($datos->nombre) ? $datos->nombre : ''); ?></p>
+            <p><?php echo (isset($datos->NAME) ? $datos->NAME : ''); ?></p>
         </div>
     </div>
     <div class="form-group">
-        <label class="col-sm-2" for="apellido">Apellidos</label>
+        <label class="col-sm-2" for="APPPASSWORD">Contraseña</label>
         <div class="col-sm-6 col-md-4">
-            <p><?php echo (isset($datos->apellido) ? $datos->apellido : ''); ?></p>
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-sm-2" for="username">Nombre de usuario</label>
-        <div class="col-sm-6 col-md-4">
-            <p><?php echo (isset($datos->username) ? $datos->username : ''); ?></p>
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-sm-2" for="password">Contraseña</label>
-        <div class="col-sm-6 col-md-4">
-            <input type="password" id="password" name="password" class="form-control" placeholder="Contraseña">
+            <input type="password" id="APPPASSWORD" name="APPPASSWORD" class="form-control" placeholder="Contraseña">
         </div>
     </div>
     <div class="form-group">
@@ -43,7 +31,7 @@
     
 $(function () {
    
-    $('#password').focus();
+    $('#APPPASSWORD').focus();
     
 });
 
