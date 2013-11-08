@@ -8,23 +8,23 @@
         </div>
     </div>
     <div class="form-group">
-        <label class="col-sm-2" for="nombre">Nombre</label>
+        <label class="col-sm-2" for="PERMNAME">Nombre</label>
         <div class="col-sm-6 col-md-4">
-            <input type="text" id="nombre" name="nombre" class="form-control required" value="<?php echo (isset($datos->nombre) ? $datos->nombre : ''); ?>" placeholder="Nombre">
+            <input type="text" id="PERMNAME" name="PERMNAME" class="form-control required" value="<?php echo (isset($datos->PERMNAME) ? $datos->PERMNAME : ''); ?>" placeholder="Nombre">
         </div>
     </div>
     <div class="form-group">
-        <label class="col-sm-2" for="icon">Ícono</label>
+        <label class="col-sm-2" for="ICON">Ícono</label>
         <div class="col-sm-6 col-md-4">
-            <input type="text" id="icon" name="icon" class="form-control" value="<?php echo (isset($datos->icon) ? $datos->icon : ''); ?>" placeholder="Ícono">
+            <input type="text" id="ICON" name="ICON" class="form-control" value="<?php echo (isset($datos->ICON) ? $datos->ICON : ''); ?>" placeholder="Ícono">
         </div>
     </div>
     <div class="form-group">
-        <label class="col-sm-2" for="menu">Menú</label>
+        <label class="col-sm-2" for="MENU">Menú</label>
         <div class="col-sm-6 col-md-4">
-            <input type="checkbox" id="menu" name="menu" value="1" <?php 
-            if(isset($datos->menu)){
-                echo $datos->menu == 1 ? 'checked' : ''; 
+            <input type="checkbox" id="MENU" name="MENU" value="1" <?php 
+            if(isset($datos->MENU)){
+                echo $datos->MENU == 1 ? 'checked' : ''; 
             }
             ?>>
         </div>
@@ -35,7 +35,7 @@
     
 $(function () {
    
-    $('#nombre').focus();
+    $('#PERMNAME').focus();
     
 });
 

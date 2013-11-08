@@ -43,12 +43,12 @@ class Seguridad extends CI_Controller{
         $this->table->set_heading('Nombre', 'Ruta', 'Menú', 'Icono', '', '');
         foreach ($permisos as $permiso) {
                 $this->table->add_row(
-                        $permiso->nombre, 
-                        $permiso->folder.'/'.$permiso->class.'/'.$permiso->method,
-                        ($permiso->menu == 1 ? 'Si' : '-'),
-                        '<span class="glyphicon glyphicon-'.$permiso->icon.'"></span>',
-                        anchor('seguridad/permisos_update/' . $permiso->id_permiso . '/' . $offset, '<span class="glyphicon glyphicon-edit"></span>'),
-                        anchor('seguridad/permisos_delete/' . $permiso->id_permiso . '/' . $offset, '<span class="glyphicon glyphicon-remove"></span>')
+                        $permiso->PERMNAME, 
+                        $permiso->FOLDER.'/'.$permiso->CLASS.'/'.$permiso->METHOD,
+                        ($permiso->MENU == 1 ? 'Si' : '-'),
+                        '<span class="glyphicon glyphicon-'.$permiso->ICON.'"></span>',
+                        anchor('seguridad/permisos_update/' . $permiso->ID . '/' . $offset, '<span class="glyphicon glyphicon-edit"></span>'),
+                        anchor('seguridad/permisos_delete/' . $permiso->ID . '/' . $offset, '<span class="glyphicon glyphicon-remove"></span>')
                 );
         }
         $data['table'] = $this->table->generate();
@@ -78,25 +78,23 @@ class Seguridad extends CI_Controller{
         $data['mensaje'] = '';
         $data['action'] = 'seguridad/permisos_update/' . $id . '/' . $offset;
 
-        $permiso = $this->p->get_by_id($id)->row();
-        if ($this->input->post()) {
-            $permiso = array(
-                'nombre' => $this->input->post('nombre'),
-                'icon' => $this->input->post('icon'),
-                'menu' => $this->input->post('menu')
-                );
+        if ( ($permiso = $this->input->post()) ){
             $this->p->update($id, $permiso);
             $this->session->set_flashdata('mensaje',$this->config->item('update_success'));
             redirect($this->folder.$this->clase.'permisos_update/'.$id . '/' . $offset);
         }
-        $data['datos'] = (object)$permiso;
+        $data['datos'] = $this->p->get_by_id($id)->row();
         $this->load->view('seguridad/permisos/formulario', $data);
     }
     
     public function permisos_delete( $id, $offset = 0 ){
         if (!empty($id)) {
             $this->load->model('permiso', 'p');
-            $this->p->delete($id);
+            $resultado = $this->p->delete($id);
+            if($resultado > 0)
+                $this->session->set_flashdata('mensaje',$this->config->item('update_success'));
+            else
+                $this->session->set_flashdata('mensaje',$this->config->item('error'));
         }
         redirect('seguridad/permisos_lista/'.$offset);
     }

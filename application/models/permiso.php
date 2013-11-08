@@ -70,6 +70,7 @@ class Permiso extends CI_Model {
     function delete($id) {
         $this->db->where('ID', $id);
         $this->db->delete($this->tbl);
+        return $this->db->affected_rows();
     }
 }
 
