@@ -79,6 +79,11 @@ class Seguridad extends CI_Controller{
         $data['action'] = 'seguridad/permisos_update/' . $id . '/' . $offset;
 
         if ( ($permiso = $this->input->post()) ){
+            $permiso = array(
+                'PERMNAME' => $this->input->post('PERMNAME'),
+                'ICON' => $this->input->post('ICON'),
+                'MENU' => $this->input->post('MENU')
+                );
             $this->p->update($id, $permiso);
             $this->session->set_flashdata('mensaje',$this->config->item('update_success'));
             redirect($this->folder.$this->clase.'permisos_update/'.$id . '/' . $offset);
