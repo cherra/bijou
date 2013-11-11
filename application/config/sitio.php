@@ -70,4 +70,12 @@ $config['icono_aceptar'] = "glyphicon glyphicon-ok";
 $config['icono_agregar'] = "glyphicon glyphicon-plus";
 $config['icono_upload'] = "glyphicon glyphicon-upload";
 $config['icono_download'] = "glyphicon glyphicon-download";
+
+/*
+ * Parámetros para las etiquetas
+ */
+
+$config['label_printer'] = 'zebra';
+$config['label_format'] = '22.prn';
+$config['label_file'] = 'tmp/etiqueta.prn';
 ?>
