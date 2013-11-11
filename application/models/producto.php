@@ -59,7 +59,7 @@ class Producto extends CI_Model {
     */
     function save( $datos ) {
         $this->db->insert($this->tbl, $datos);
-        return $this->db->insert_id();
+        return $this->db->affected_rows();
     }
 
     /**
@@ -77,5 +77,43 @@ class Producto extends CI_Model {
         $this->db->where('ID', $id);
         $this->db->delete($this->tbl);
     } 
+    
+    
+    /*
+     * Generar un código
+     */
+    
+    public function genera_codigo($proveedor, $categoria){
+        $this->db->where('ID', $proveedor);
+        $query = $this->db->get('SUPPLIERS');
+        if($query->num_rows() > 0){
+            $row = $query->row();
+            $barcode = $row->PREFIX;
+        }else{
+            return false;
+        }
+        
+        $this->db->select('UPPER(LEFT(NAME,2)) AS CAT_PREFIX',false);
+        $this->db->where('ID', $categoria);
+        $query = $this->db->get('CATEGORIES');
+        if($query->num_rows() > 0){
+            $row = $query->row();
+            $barcode .= $row->CAT_PREFIX;
+        }else{
+            return false;
+        }
+        
+        $this->db->select('MAX(RIGHT(CODE,4)) AS CODIGO',false);
+        $this->db->where('LEFT(CODE,4)',$barcode);
+        $query = $this->db->get('PRODUCTS');
+        if($query->num_rows() > 0){
+            $row = $query->row();
+            $barcode .= str_pad($row->CODIGO+1, 4, "0", STR_PAD_LEFT);
+        }else{
+            $barcode .= "0001";
+        }
+        
+        return $barcode;
+    }
 }
 ?>
