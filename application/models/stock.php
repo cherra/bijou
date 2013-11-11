@@ -81,7 +81,7 @@ class Stock extends CI_Model {
     */
     function save( $datos ) {
         $this->db->insert($this->tbl, $datos);
-        return $this->db->insert_id();
+        return $this->db->affected_rows();
     }
 
     /**
