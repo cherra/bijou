@@ -22,6 +22,18 @@ class Stock extends CI_Model {
         return $query->num_rows();
     }
     
+    function count_all_entradas( $filtro = NULL ) {
+        if(!empty($filtro)){
+            $filtro = explode(' ', $filtro);
+            foreach($filtro as $f){
+                $this->db->or_like('ID',$f);
+            }
+        }
+        $this->db->where('REASON', '1');
+        $query = $this->db->get($this->tbl);
+        return $query->num_rows();
+    }
+    
     /**
      *  Obtiene todos los registros de la tabla
      */
@@ -40,7 +52,19 @@ class Stock extends CI_Model {
                 $this->db->or_like('ID',$f);
             }
         }
-        $this->db->order_by('DATENEW','asc');
+        $this->db->order_by('DATENEW','desc');
+        return $this->db->get($this->tbl, $limit, $offset);
+    }
+    
+    function get_paged_list_entradas($limit = NULL, $offset = 0, $filtro = NULL) {
+        if(!empty($filtro)){
+            $filtro = explode(' ', $filtro);
+            foreach($filtro as $f){
+                $this->db->or_like('ID',$f);
+            }
+        }
+        $this->db->where('REASON', '1');
+        $this->db->order_by('DATENEW','desc');
         return $this->db->get($this->tbl, $limit, $offset);
     }
     
