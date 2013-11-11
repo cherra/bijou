@@ -27,7 +27,7 @@ class Proveedor extends CI_Model {
      *  Obtiene todos los registros de la tabla
      */
     function get_all() {
-        $this->db->order_by('ID','asc');
+        $this->db->order_by('NAME','asc');
         return $this->db->get($this->tbl);
     }
     
