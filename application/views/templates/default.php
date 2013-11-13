@@ -29,7 +29,9 @@
         }
         
         .sidebar-nav .nav li.nav-header{
-            margin-top: 10px;
+            margin: 5px 0 5px 15px;
+/*            margin-top: 10px;
+            margin-bottom: 5px;*/
         }
         
         .sidebar-nav .nav li a{
@@ -82,7 +84,7 @@
                     $folder_activo = $folder->FOLDER;
                 }
                 ?>><?php 
-                echo anchor($folder->FOLDER.'/'.$folder->FOLDER, ucfirst(strtolower($folder->FOLDER)), 'class="navbar-link"'); ?></li>
+                echo anchor($folder->FOLDER.'/'.$folder->FOLDER, strtoupper($folder->FOLDER), 'class="navbar-link"'); ?></li>
                 <?php } ?>
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -130,7 +132,7 @@
                             if($clase != $metodo->CLASS){
                                 $clase = $metodo->CLASS;
                         ?>
-                        <li class="nav-header text-muted"><?php echo strtoupper(str_replace('_',' ',$metodo->CLASS)); ?></li>
+                        <li class="nav-header text-muted"><small><strong><?php echo strtoupper(str_replace('_',' ',$metodo->CLASS)); ?></strong></small></li>
                         <?php
                             }
                             // Link para el menú
