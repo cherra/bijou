@@ -63,12 +63,40 @@ class Inventario extends CI_Controller {
                     array('data'=> $sucursal->NAME, 'class' => 'hidden-xs'),
                     //array('data'=> (!empty($usuario->NAME) ? $usuario->NAME : ''), 'class' => 'hidden-xs'),
                     anchor($this->folder.$this->clase.'entradas_ver/' . $d->ID . '/' . $offset, '<span class="glyphicon glyphicon-edit"></span>','title="Editar"'),
+                    anchor('#', '<span class="glyphicon glyphicon-print"></span>',array('title' => "Imprimir etiqueta", 'id' => $producto->ID, 'class' => 'imprimir')),
                     anchor($this->folder.$this->clase.'entradas_borrar/' . $d->ID . '/' . $offset, '<span class="glyphicon glyphicon-remove"></span>','title="Borrar"')
             );
     	}
+        $data['action_imprimir'] = $this->folder.$this->clase.'entradas_imprimir';
     	$data['table'] = $this->table->generate();
     	
-    	$this->load->view('lista', $data);
+    	$this->load->view('inventario/entradas/lista', $data);
+    }
+    
+    public function entradas_imprimir( ){
+        if($this->input->is_ajax_request()){
+            if( ($datos = $this->input->post()) ){
+                $this->load->model('producto','p');
+
+                $this->load->library('etiqueta');  // Para generar las etiquetas
+                $this->load->helper('file');
+
+                $producto = $this->p->get_by_id($datos['ID'])->row();
+//                echo "ID: ".$datos['ID'];
+//                echo var_dump($producto);
+
+                $etiqueta = $this->etiqueta->genera($this->config->item('label_format'), $producto->NAME, $producto->PRICESELL, $producto->CODE, '', '1', $producto->REFERENCE);
+                if($etiqueta){
+                    if(write_file($this->config->item('asset_path').$this->config->item('label_file'), $etiqueta)){
+                        echo "OK";
+                    }else{
+                        echo "Error al generar la etiqueta";
+                    }
+                }else{
+                    echo "Error al generar la etiqueta: ".$this->config->item('asset_path').$this->config->item('label_format');
+                }
+            }
+        }
     }
     
     /*
