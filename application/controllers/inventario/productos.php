@@ -46,7 +46,7 @@ class Productos extends CI_Controller {
     	$this->table->set_empty('&nbsp;');
     	$tmpl = array ( 'table_open' => '<table class="' . $this->config->item('tabla_css') . '" >' );
     	$this->table->set_template($tmpl);
-    	$this->table->set_heading('Nombre', 'Código', 'Categoría', 'Precio', '', '');
+    	$this->table->set_heading('Nombre', 'Código', 'Categoría', 'Precio', '');
     	foreach ($datos as $d) {
             $categoria = $this->c->get_by_id($d->CATEGORY)->row();
             $this->table->add_row(
@@ -54,7 +54,7 @@ class Productos extends CI_Controller {
                     $d->CODE,
                     $categoria->NAME,
                     array('data' => number_format($d->PRICESELL,2), 'class' => 'text-right'),
-                    anchor($this->folder.$this->clase.'articulos_ver/' . $d->ID . '/' . $offset, '<span class="'.$this->config->item('icono_editar').'"></span>'),
+                    //anchor($this->folder.$this->clase.'articulos_ver/' . $d->ID . '/' . $offset, '<span class="'.$this->config->item('icono_editar').'"></span>'),
                     array('data' => anchor('#', '<span class="glyphicon glyphicon-print"></span>',array('title' => "Imprimir etiqueta", 'id' => $d->ID, 'class' => 'imprimir')), 'class' => 'visible-lg')
             );
     	}
