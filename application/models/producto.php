@@ -15,11 +15,14 @@ class Producto extends CI_Model {
         if(!empty($filtro)){
             $filtro = explode(' ', $filtro);
             foreach($filtro as $f){
-                $this->db->or_like('NAME',$f);
-                $this->db->or_like('CODE',$f);
+                $this->db->or_like('p.NAME',$f);
+                $this->db->or_like('p.CODE',$f);
+                $this->db->or_like('p.REFERENCE',$f);
+                $this->db->or_like('c.NAME',$f);
             }
         }
-        $query = $this->db->get($this->tbl);
+        $this->db->join('CATEGORIES c','p.CATEGORY = c.ID');
+        $query = $this->db->get($this->tbl.' p');
         return $query->num_rows();
     }
     
@@ -35,15 +38,19 @@ class Producto extends CI_Model {
     * Cantidad de registros por pagina
     */
     function get_paged_list($limit = NULL, $offset = 0, $filtro = NULL) {
+        $this->db->select('p.*');
         if(!empty($filtro)){
             $filtro = explode(' ', $filtro);
             foreach($filtro as $f){
-                $this->db->or_like('NAME',$f);
-                $this->db->or_like('CODE',$f);
+                $this->db->or_like('p.NAME',$f);
+                $this->db->or_like('p.CODE',$f);
+                $this->db->or_like('p.REFERENCE',$f);
+                $this->db->or_like('c.NAME',$f);
             }
         }
-        $this->db->order_by('ID','asc');
-        return $this->db->get($this->tbl, $limit, $offset);
+        $this->db->join('CATEGORIES c','p.CATEGORY = c.ID');
+        $this->db->order_by('p.NAME','asc');
+        return $this->db->get($this->tbl.' p', $limit, $offset);
     }
     
     /**

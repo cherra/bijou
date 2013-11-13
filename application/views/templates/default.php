@@ -29,7 +29,7 @@
         }
         
         .sidebar-nav .nav li.nav-header{
-            margin: 5px 0 5px 15px;
+            margin: 7px 0 2px 15px;
 /*            margin-top: 10px;
             margin-bottom: 5px;*/
         }
