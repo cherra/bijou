@@ -62,7 +62,7 @@ class Inventario extends CI_Controller {
                     $d->UNITS,
                     array('data'=> $sucursal->NAME, 'class' => 'hidden-xs'),
                     //array('data'=> (!empty($usuario->NAME) ? $usuario->NAME : ''), 'class' => 'hidden-xs'),
-                    anchor($this->folder.$this->clase.'entradas_ver/' . $d->ID . '/' . $offset, '<span class="glyphicon glyphicon-edit"></span>','title="Editar"'),
+                    //anchor($this->folder.$this->clase.'entradas_ver/' . $d->ID . '/' . $offset, '<span class="glyphicon glyphicon-edit"></span>','title="Editar"'),
                     anchor('#', '<span class="glyphicon glyphicon-print"></span>',array('title' => "Imprimir etiqueta", 'id' => $producto->ID, 'class' => 'imprimir')),
                     anchor($this->folder.$this->clase.'entradas_borrar/' . $d->ID . '/' . $offset, '<span class="glyphicon glyphicon-remove"></span>','title="Borrar"')
             );
