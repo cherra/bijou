@@ -36,17 +36,17 @@ class acl
 
         function getPermKeyFromID($permID) {
                 //$strSQL = "SELECT `permKey` FROM `".DB_PREFIX."permissions` WHERE `ID` = " . floatval($permID) . " LIMIT 1";
-                $this->ci->db->select('PERMKEY AS permKey');
-                $this->ci->db->where('ID',floatval($permID));
+                $this->ci->db->select('PERMKEY');
+                $this->ci->db->where('ID',$permID);
                 $sql = $this->ci->db->get($this->perm_table,1);
                 $data = $sql->result();
-                return $data[0]->permKey;
+                return $data[0]->PERMKEY;
         }
 
         function getPermNameFromID($permID) {
                 //$strSQL = "SELECT `permName` FROM `".DB_PREFIX."permissions` WHERE `ID` = " . floatval($permID) . " LIMIT 1";
-                $this->ci->db->select('NAME AS nombre');
-                $this->ci->db->where('ID',floatval($permID));
+                $this->ci->db->select('PERMNAME AS nombre');
+                $this->ci->db->where('ID',$permID);
                 $sql = $this->ci->db->get($this->perm_table,1);
                 $data = $sql->result();
                 return $data[0]->nombre;
@@ -55,7 +55,7 @@ class acl
         function getRoleNameFromID($roleID) {
                 //$strSQL = "SELECT `roleName` FROM `".DB_PREFIX."roles` WHERE `ID` = " . floatval($roleID) . " LIMIT 1";
                 $this->ci->db->select('NAME AS nombre');
-                $this->ci->db->where('ID',floatval($roleID),1);
+                $this->ci->db->where('ID',$roleID,1);
                 $sql = $this->ci->db->get($this->role_table);
                 $data = $sql->result();
                 return $data[0]->nombre;
@@ -64,7 +64,7 @@ class acl
         function getUserRoles() {
                 //$strSQL = "SELECT * FROM `".DB_PREFIX."user_roles` WHERE `userID` = " . floatval($this->userID) . " ORDER BY `addDate` ASC";
 
-                $this->ci->db->where(array('USERID'=>floatval($this->userID)));
+                $this->ci->db->where(array('USERID'=>$this->userID));
                 $this->ci->db->order_by('ADDDATE','asc');
                 $sql = $this->ci->db->get($this->user_role_table);
                 $data = $sql->result();
@@ -72,7 +72,7 @@ class acl
                 $resp = array();
                 foreach( $data as $row )
                 {
-                        $resp[] = $row->ID;
+                        $resp[] = $row->ROLEID;
                 }
                 return $resp;
         }
@@ -125,7 +125,7 @@ class acl
                         $this->ci->db->where_in('ROLEID',$role);
                 } else {
                         //$roleSQL = "SELECT * FROM `".DB_PREFIX."role_perms` WHERE `roleID` = " . floatval($role) . " ORDER BY `ID` ASC";
-                        $this->ci->db->where(array('ROLEID'=>floatval($role)));
+                        $this->ci->db->where(array('ROLEID'=>$role));
 
                 }
                 $this->ci->db->order_by('ID','asc');
@@ -136,7 +136,7 @@ class acl
                 {
                         $pK = strtolower($this->getPermKeyFromID($row->PERMID));
                         if ($pK == '') { continue; }
-                        if ($row->valor === '1') {
+                        if ($row->VALUE === '1') {
                                 $hP = true;
                         } else {
                                 $hP = false;
@@ -149,7 +149,7 @@ class acl
         function getUserPerms($userID) {
                 //$strSQL = "SELECT * FROM `".DB_PREFIX."user_perms` WHERE `userID` = " . floatval($userID) . " ORDER BY `addDate` ASC";
 
-                $this->ci->db->where('USERID',floatval($userID));
+                $this->ci->db->where('USERID',$userID);
                 $this->ci->db->order_by('ADDDATE','asc');
                 $sql = $this->ci->db->get($this->user_perms_table);
                 $data = $sql->result();
@@ -159,7 +159,7 @@ class acl
                 {
                         $pK = strtolower($this->getPermKeyFromID($row->PERMID));
                         if ($pK == '') { continue; }
-                        if ($row->valor == '1') {
+                        if ($row->VALUE == '1') {
                                 $hP = true;
                         } else {
                                 $hP = false;
@@ -190,7 +190,7 @@ class acl
         function hasRole($roleID) {
                 foreach($this->userRoles as $k => $v)
                 {
-                        if (floatval($v) === floatval($roleID))
+                        if ($v === $roleID)
                         {
                                 return true;
                         }
@@ -235,7 +235,7 @@ class acl
                             if($this->ci->config->item('developer_mode') == 1)
                                 return false;
                             
-                            $this->userID = floatval($this->ci->session->userdata('id_usuario'));
+                            $this->userID = $this->ci->session->userdata('id_usuario');
                             $this->userRoles = $this->getUserRoles();
                             $this->buildACL();
 
