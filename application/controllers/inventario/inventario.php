@@ -51,7 +51,7 @@ class Inventario extends CI_Controller {
     	$this->table->set_empty('&nbsp;');
     	$tmpl = array ( 'table_open' => '<table class="' . $this->config->item('tabla_css') . '" >' );
     	$this->table->set_template($tmpl);
-    	$this->table->set_heading('Fecha', 'Producto', 'C', array('data'=> 'Sucursal', 'class' => 'hidden-xs'), '');
+    	$this->table->set_heading('Fecha', 'Producto', 'Código', 'C', array('data'=> 'Sucursal', 'class' => 'hidden-xs'), array('data' => '', 'class' => 'visible-lg'));
     	foreach ($datos as $d) {
             $producto = $this->p->get_by_id($d->PRODUCT)->row();
             $sucursal = $this->su->get_by_id($d->LOCATION)->row();
@@ -59,11 +59,12 @@ class Inventario extends CI_Controller {
             $this->table->add_row(
                     $d->DATENEW,
                     $producto->NAME,
+                    $producto->REFERENCE,
                     $d->UNITS,
                     array('data'=> $sucursal->NAME, 'class' => 'hidden-xs'),
                     //array('data'=> (!empty($usuario->NAME) ? $usuario->NAME : ''), 'class' => 'hidden-xs'),
                     //anchor($this->folder.$this->clase.'entradas_ver/' . $d->ID . '/' . $offset, '<span class="glyphicon glyphicon-edit"></span>','title="Editar"'),
-                    anchor('#', '<span class="glyphicon glyphicon-print"></span>',array('title' => "Imprimir etiqueta", 'id' => $producto->ID, 'class' => 'imprimir'))
+                    array('data' => anchor('#', '<span class="glyphicon glyphicon-print"></span>',array('title' => "Imprimir etiqueta", 'id' => $producto->ID, 'class' => 'imprimir')), 'class' => 'visible-lg')
                     //anchor($this->folder.$this->clase.'entradas_borrar/' . $d->ID . '/' . $offset, '<span class="glyphicon glyphicon-remove"></span>','title="Borrar"')
             );
     	}
@@ -129,6 +130,7 @@ class Inventario extends CI_Controller {
                 $producto = array(
                     'ID' => $id_producto,
                     'CODE' => $codigo,
+                    'REFERENCE' => $datos['REFERENCE'],
                     'NAME' => $datos['NAME'],
                     'PRICESELL' => $datos['PRICE'],
                     'CATEGORY' => $datos['CATEGORY'],

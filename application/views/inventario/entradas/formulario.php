@@ -76,7 +76,7 @@
             <input type="text" name="PRICE" id="PRICE" class="form-control required" value="<?php echo (isset($datos->PRICE) ? $datos->PRICE : ''); ?>" placeholder="Precio">
         </div>
     </div>
-    <div class="form-group">
+    <div class="form-group visible-lg">
         <label class="col-sm-2" for="imprimir">Imprimir etiqueta</label>
         <div class="col-sm-8 col-md-6 col-lg-4">
             <input type="checkbox" name="imprimir" id="imprimir" value="1" checked />
