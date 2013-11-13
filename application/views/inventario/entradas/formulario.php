@@ -61,19 +61,25 @@
     <div class="form-group">
         <label class="col-sm-2" for="REFERENCE">Código proveedor</label>
         <div class="col-sm-8 col-md-6 col-lg-4">
-            <input type="text" name="REFERENCE" class="form-control required" value="<?php echo (isset($producto->REFERENCE) ? $producto->REFERENCE : ''); ?>" placeholder="Código proveedor">
+            <input type="text" name="REFERENCE" id="REFERENCE" class="form-control required" value="<?php echo (isset($producto->REFERENCE) ? $producto->REFERENCE : ''); ?>" placeholder="Código proveedor">
         </div>
     </div>
     <div class="form-group">
         <label class="col-sm-2" for="UNITS">Cantidad</label>
         <div class="col-sm-8 col-md-6 col-lg-4">
-            <input type="text" name="UNITS" class="form-control required" value="<?php echo (isset($datos->UNITS) ? $datos->UNITS : ''); ?>" placeholder="Cantidad">
+            <input type="text" name="UNITS" id="UNITS" class="form-control required" value="<?php echo (isset($datos->UNITS) ? $datos->UNITS : ''); ?>" placeholder="Cantidad">
         </div>
     </div>
     <div class="form-group">
         <label class="col-sm-2" for="PRICE">Precio</label>
         <div class="col-sm-8 col-md-6 col-lg-4">
-            <input type="text" name="PRICE" class="form-control required" value="<?php echo (isset($datos->PRICE) ? $datos->PRICE : ''); ?>" placeholder="Precio">
+            <input type="text" name="PRICE" id="PRICE" class="form-control required" value="<?php echo (isset($datos->PRICE) ? $datos->PRICE : ''); ?>" placeholder="Precio">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2" for="imprimir">Imprimir etiqueta</label>
+        <div class="col-sm-8 col-md-6 col-lg-4">
+            <input type="checkbox" name="imprimir" id="imprimir" value="1" checked />
         </div>
     </div>
 <?php echo form_close(); ?>
@@ -177,7 +183,7 @@ var validator = $('#form').validate({
     unhighlight: function(element, errorClass, validClass){
         $(element).parent().parent().removeClass(errorClass);
     },
-    submitHandler: function(form){
+    submitHandler: function(){
         guardar_producto();
     }
 });
@@ -193,8 +199,15 @@ function guardar_producto(){
     }).done(function(respuesta){
         console.log(respuesta);
         if(respuesta == 'OK'){
-            printFile("<?php echo asset_url().$this->config->item('label_file'); ?>");
             $('#mensaje').text('Registro creado con éxito');
+            if($('#imprimir').is(':checked')){
+                printFile("<?php echo asset_url().$this->config->item('label_file'); ?>");
+                $('#mensaje').append('<br>Impresión enviada');
+            }
+            $('#NAME').val('');
+            $('#REFERENCE').val('');
+            $('#UNITS').val('');
+            $('#PRICE').val('');
             if($('#alerta').hasClass('alert-danger'))
                 $('#alerta').removeClass('alert-danger').addClass('alert-success');
         }else{
@@ -202,7 +215,7 @@ function guardar_producto(){
                 $('#alerta').removeClass('alert-success').addClass('alert-danger');
             $('#mensaje').text('Error al registrar el artículo!');
         }
-        
+        $('#NAME').focus();
         $('.alert').css('display','block');
     }).fail(function(){
         console.log("Error al intentar guardar la compra");

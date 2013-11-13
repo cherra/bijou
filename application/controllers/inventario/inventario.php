@@ -148,15 +148,18 @@ class Inventario extends CI_Controller {
                     );
 
                     if( $this->s->save($entrada) > 0 ){
-                        $etiqueta = $this->etiqueta->genera($this->config->item('label_format'), $datos['NAME'], $datos['PRICE'], $codigo, '', $datos['UNITS'], $datos['REFERENCE']);
-                        if($etiqueta){
-                            if(write_file($this->config->item('asset_path').$this->config->item('label_file'), $etiqueta)){
-                                echo "OK";
-                            }else
-                                echo "Error: No se pudo escribir en disco el archivo de la etiqueta.";
-                            //exec('lp -d '.$this->config->item('label_printer').' -h '.$this->config->item('label_host').' -o raw labels/'.$this->config->item('label_file'));
+                        if(isset($datos['imprimir'])){
+                            $etiqueta = $this->etiqueta->genera($this->config->item('label_format'), $datos['NAME'], $datos['PRICE'], $codigo, '', $datos['UNITS'], $datos['REFERENCE']);
+                            if($etiqueta){
+                                if(write_file($this->config->item('asset_path').$this->config->item('label_file'), $etiqueta)){
+                                    echo "OK";
+                                }else
+                                    echo "Error: No se pudo escribir en disco el archivo de la etiqueta.";
+                            }else{
+                                echo "Error al generar la etiqueta: ".$this->config->item('asset_path').$this->config->item('label_format');
+                            }
                         }else{
-                            echo "Error al generar la etiqueta: ".$this->config->item('asset_path').$this->config->item('label_format');
+                            echo "OK";
                         }
                     }else{
                         echo "Error al guardar la etiqueta en disco";
