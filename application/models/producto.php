@@ -15,10 +15,14 @@ class Producto extends CI_Model {
         if(!empty($filtro)){
             $filtro = explode(' ', $filtro);
             foreach($filtro as $f){
-                $this->db->or_like('p.NAME',$f);
+		$this->db->where('(p.NAME LIKE "%'.$f.'%"'.
+                        ' OR p.CODE = "'.$f.'"'.
+                        ' OR p.REFERENCE = "'.$f.'"'.
+                        ' OR c.NAME LIKE "%'.$f.'%")');
+                /*$this->db->or_like('p.NAME',$f);
                 $this->db->or_like('p.CODE',$f);
                 $this->db->or_like('p.REFERENCE',$f);
-                $this->db->or_like('c.NAME',$f);
+                $this->db->or_like('c.NAME',$f);*/
             }
         }
         $this->db->join('CATEGORIES c','p.CATEGORY = c.ID');
@@ -42,10 +46,14 @@ class Producto extends CI_Model {
         if(!empty($filtro)){
             $filtro = explode(' ', $filtro);
             foreach($filtro as $f){
-                $this->db->or_like('p.NAME',$f);
+		$this->db->where('(p.NAME LIKE "%'.$f.'%"'.
+			' OR p.CODE = "'.$f.'"'.
+			' OR p.REFERENCE = "'.$f.'"'.
+			' OR c.NAME LIKE "'.$f.'")');
+                /*$this->db->or_like('p.NAME',$f);
                 $this->db->or_like('p.CODE',$f);
                 $this->db->or_like('p.REFERENCE',$f);
-                $this->db->or_like('c.NAME',$f);
+                $this->db->or_like('c.NAME',$f);*/
             }
         }
         $this->db->join('CATEGORIES c','p.CATEGORY = c.ID');

@@ -22,7 +22,7 @@ class Productos extends CI_Controller {
     	
         $data['titulo'] = 'Artículos <small>Lista</small>';
     	//$data['link_add'] = $this->folder.$this->clase.'articulos_agregar/'. $offset;
-    	$data['action'] = $this->folder.$this->clase.'articulos/'. $offset;
+    	$data['action'] = $this->folder.$this->clase.'articulos';
         
         // Filtro de busqueda (se almacenan en la sesión a través de un hook)
         $filtro = $this->session->userdata('filtro');
@@ -60,7 +60,7 @@ class Productos extends CI_Controller {
     	}
         $data['action_imprimir'] = $this->folder.$this->clase.'imprimir_etiqueta';
     	$data['table'] = $this->table->generate();
-    	
+    
     	$this->load->view('inventario/productos/lista', $data);
     }
     
